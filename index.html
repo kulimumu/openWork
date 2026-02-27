@@ -271,6 +271,7 @@
       return 'green';
     }
 
+    // 1~45에서 Set으로 중복 제거 후 오름차순 정렬
     function generateUniqueNumbers() {
       const picked = new Set();
       while (picked.size < 6) {
@@ -279,15 +280,19 @@
       return Array.from(picked).sort((a, b) => a - b);
     }
 
-    function renderBalls(numbers) {
+    function renderBallsStaggered(numbers) {
+      const staggerMs = 150;
       ballRow.innerHTML = '';
       numbers.forEach((num, index) => {
-        const ball = document.createElement('div');
-        ball.className = `ball ${getBallColorClass(num)}`;
-        ball.style.animationDelay = `${index * 150}ms`;
-        ball.textContent = num;
-        ballRow.appendChild(ball);
+        setTimeout(() => {
+          const ball = document.createElement('div');
+          ball.className = `ball ${getBallColorClass(num)}`;
+          ball.textContent = num;
+          ballRow.appendChild(ball);
+        }, index * staggerMs);
       });
+
+      return numbers.length * staggerMs + 550;
     }
 
     function showToast(message) {
@@ -309,13 +314,13 @@
 
       setTimeout(() => {
         currentNumbers = generateUniqueNumbers();
-        renderBalls(currentNumbers);
+        const totalAnimationMs = renderBallsStaggered(currentNumbers);
 
         setTimeout(() => {
           isGenerating = false;
           generateBtn.disabled = false;
           generateBtn.textContent = '번호 생성하기';
-        }, 6 * 150 + 550);
+        }, totalAnimationMs);
       }, 200);
     }
 
