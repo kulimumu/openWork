@@ -33,6 +33,7 @@
       display: grid;
       place-items: center;
       padding: 20px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
     }
 
     .app {
@@ -115,6 +116,9 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
     }
 
     button {
@@ -124,6 +128,7 @@
       font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
+      min-height: 50px;
       transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
@@ -216,23 +221,51 @@
     }
 
     @media (max-width: 640px) {
+      body {
+        padding: 12px;
+      }
+
       .app {
-        padding: 22px 16px 18px;
+        border-radius: 18px;
+        padding: 20px 14px 16px;
       }
 
       .ball-row {
-        min-height: 88px;
+        margin: 22px 0 16px;
+        min-height: 84px;
         gap: 8px;
       }
 
       .ball {
         width: 46px;
         height: 46px;
-        font-size: 1.2rem;
+        font-size: 1.12rem;
       }
 
       button {
         width: 100%;
+        padding: 13px 18px;
+        font-size: 0.98rem;
+      }
+    }
+
+    @media (max-width: 390px) {
+      h1 {
+        font-size: 1.45rem;
+      }
+
+      .sub {
+        font-size: 0.9rem;
+      }
+
+      .ball-row {
+        gap: 6px;
+      }
+
+      .ball {
+        width: 41px;
+        height: 41px;
+        font-size: 1rem;
       }
     }
   </style>
