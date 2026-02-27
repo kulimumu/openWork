@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>행운의 로또 번호</title>
+  <style>
+    :root {
+      --bg-1: #f8fbff;
+      --bg-2: #edf4ff;
+      --panel: rgba(255, 255, 255, 0.88);
+      --text: #0f172a;
+      --muted: #5b6475;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+      --ring: rgba(37, 99, 235, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 15%, #dbeafe 0, transparent 35%),
+        radial-gradient(circle at 85% 25%, #e0f2fe 0, transparent 32%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2));
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(860px, 100%);
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 28px 24px 24px;
+      text-align: center;
+      animation: fade-up 0.65s ease;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4.5vw, 2.35rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .sub {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .ball-row {
+      margin: 28px 0 20px;
+      min-height: 102px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ball {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 1.45rem;
+      font-weight: 800;
+      box-shadow:
+        inset 0 -9px 10px rgba(0, 0, 0, 0.18),
+        0 6px 16px rgba(15, 23, 42, 0.2);
+      opacity: 0;
+      transform: translateY(-90px) rotate(-180deg) scale(0.75);
+      animation: drop-in 0.55s cubic-bezier(0.18, 0.89, 0.32, 1.18) forwards;
+    }
+
+    .ball.yellow {
+      background: linear-gradient(145deg, #fde047, #f59e0b);
+      color: #1f2937;
+      text-shadow: none;
+    }
+
+    .ball.blue {
+      background: linear-gradient(145deg, #60a5fa, #2563eb);
+    }
+
+    .ball.red {
+      background: linear-gradient(145deg, #fb7185, #dc2626);
+    }
+
+    .ball.gray {
+      background: linear-gradient(145deg, #94a3b8, #475569);
+    }
+
+    .ball.green {
+      background: linear-gradient(145deg, #4ade80, #16a34a);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    #generateBtn {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.3);
+    }
+
+    #generateBtn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    #generateBtn:active {
+      transform: scale(0.96);
+    }
+
+    #generateBtn:focus-visible {
+      outline: 3px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    #generateBtn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #copyBtn {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    #copyBtn:hover {
+      background: #cbd5e1;
+    }
+
+    .hint {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(10px);
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.86rem;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 0.95;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes drop-in {
+      0% {
+        opacity: 0;
+        transform: translateY(-90px) rotate(-180deg) scale(0.75);
+      }
+      80% {
+        opacity: 1;
+        transform: translateY(6px) rotate(10deg) scale(1.03);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+      }
+    }
+
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 22px 16px 18px;
+      }
+
+      .ball-row {
+        min-height: 88px;
+        gap: 8px;
+      }
+
+      .ball {
+        width: 46px;
+        height: 46px;
+        font-size: 1.2rem;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="로또 번호 자동 생성기">
+    <h1>행운의 로또 번호</h1>
+    <p class="sub">버튼을 누르면 1~45 중 중복 없이 6개가 오름차순으로 생성됩니다.</p>
+
+    <section id="ballRow" class="ball-row" aria-live="polite"></section>
+
+    <div class="controls">
+      <button id="generateBtn" type="button">번호 생성하기</button>
+      <button id="copyBtn" type="button">번호 복사</button>
+    </div>
+
+    <p class="hint">실제 추첨과 무관한 재미용 생성기입니다.</p>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const ballRow = document.getElementById('ballRow');
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const toast = document.getElementById('toast');
+
+    let currentNumbers = [];
+    let isGenerating = false;
+
+    function getBallColorClass(num) {
+      if (num <= 10) return 'yellow';
+      if (num <= 20) return 'blue';
+      if (num <= 30) return 'red';
+      if (num <= 40) return 'gray';
+      return 'green';
+    }
+
+    function generateUniqueNumbers() {
+      const picked = new Set();
+      while (picked.size < 6) {
+        picked.add(Math.floor(Math.random() * 45) + 1);
+      }
+      return Array.from(picked).sort((a, b) => a - b);
+    }
+
+    function renderBalls(numbers) {
+      ballRow.innerHTML = '';
+      numbers.forEach((num, index) => {
+        const ball = document.createElement('div');
+        ball.className = `ball ${getBallColorClass(num)}`;
+        ball.style.animationDelay = `${index * 150}ms`;
+        ball.textContent = num;
+        ballRow.appendChild(ball);
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1600);
+    }
+
+    function generateNumbers() {
+      if (isGenerating) return;
+
+      isGenerating = true;
+      generateBtn.disabled = true;
+      generateBtn.textContent = '행운을 불러오는 중...';
+      ballRow.innerHTML = '';
+
+      setTimeout(() => {
+        currentNumbers = generateUniqueNumbers();
+        renderBalls(currentNumbers);
+
+        setTimeout(() => {
+          isGenerating = false;
+          generateBtn.disabled = false;
+          generateBtn.textContent = '번호 생성하기';
+        }, 6 * 150 + 550);
+      }, 200);
+    }
+
+    async function copyNumbers() {
+      if (!currentNumbers.length) {
+        showToast('먼저 번호를 생성해 주세요.');
+        return;
+      }
+
+      const text = currentNumbers.join(', ');
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('번호를 복사했습니다.');
+      } catch (e) {
+        showToast('복사에 실패했습니다. 직접 선택해 복사해 주세요.');
+      }
+    }
+
+    generateBtn.addEventListener('click', generateNumbers);
+    copyBtn.addEventListener('click', copyNumbers);
+
+    generateNumbers();
+  </script>
+</body>
+</html>
